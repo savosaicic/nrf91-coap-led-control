@@ -6,8 +6,11 @@ project(nrf91_coap_led_control)
 
 target_sources(app PRIVATE
   src/main.c
-  src/modem.c
 )
+
+if(CONFIG_LTE_LINK_CONTROL)
+  target_sources(app PRIVATE src/modem.c)
+endif()
 
 target_include_directories(app PRIVATE
   include

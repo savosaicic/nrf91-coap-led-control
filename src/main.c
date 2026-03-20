@@ -2,8 +2,11 @@
 #include <zephyr/net/coap.h>
 #include <zephyr/net/socket.h>
 #include <zephyr/logging/log.h>
-#include <dk_buttons_and_leds.h>
 #include <zephyr/random/random.h>
+
+#ifdef CONFIG_DK_LIBRARY
+#include <dk_buttons_and_leds.h>
+#endif
 
 #include "modem.h"
 
@@ -20,11 +23,13 @@ static uint8_t coap_rx[COAP_BUF_SIZE];
 
 static void led_apply(uint8_t state)
 {
+#ifdef CONFIG_DK_LIBRARY
   if (state) {
     dk_set_led_on(DK_LED2);
   } else {
     dk_set_led_off(DK_LED2);
   }
+#endif
   LOG_INF("LED → %s", state ? "ON" : "OFF");
 }
 
@@ -204,7 +209,6 @@ static void observe_loop(int sock, const struct sockaddr *server)
   struct sockaddr    src;
   struct coap_packet pkt;
   uint32_t           rnd;
-  socklen_t          src_len;
   int64_t            rereg_ms;
   uint8_t            token[4];
   int64_t            remaining;
@@ -243,9 +247,8 @@ static void observe_loop(int sock, const struct sockaddr *server)
       continue;
     }
 
-    src_len = sizeof(src);
     ret = receive_coap_packet(sock, &pkt, options, ARRAY_SIZE(options), &src,
-                              &src_len);
+                              &(socklen_t){sizeof(src)});
     if (ret < 0) {
       return;
     }
@@ -260,16 +263,20 @@ int main(void)
   int             sock;
   struct sockaddr server;
 
+#ifdef CONFIG_DK_LIBRARY
   if (dk_leds_init() != 0) {
     LOG_ERR("Failed to initialize LEDs");
     return -ENODEV;
   }
+#endif
 
+#ifdef CONFIG_LTE_LINK_CONTROL
   err = modem_configure();
   if (err) {
     LOG_ERR("Modem configuration failed: %d", err);
     return err;
   }
+#endif
 
   if (resolve_server(&server) < 0) {
     LOG_ERR("Failed to resolve server address");
