@@ -1,0 +1,21 @@
+mainmenu "CoAP LED Control"
+
+config COAP_SERVER_HOSTNAME
+	string "CoAP server hostname or IP address"
+	default "your-domain.com"
+	help
+	  Hostname or IP address of the CoAP server exposing the /led resource.
+
+config COAP_SERVER_PORT
+	int "CoAP server port"
+	default 5683
+	help
+	  UDP port of the CoAP server.
+
+config COAP_OBSERVE_REREGISTER_SECONDS
+	int "Observe re-registration interval (seconds)"
+	default 60
+	help
+	  How often the board re-sends the Observe registration.
+
+source "Kconfig.zephyr"

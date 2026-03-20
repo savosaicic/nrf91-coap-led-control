@@ -12,10 +12,6 @@
 
 LOG_MODULE_REGISTER(coap_led, LOG_LEVEL_INF);
 
-#define CONFIG_COAP_SERVER_HOSTNAME            "your-domain.com"
-#define CONFIG_COAP_SERVER_PORT                5683
-#define CONFIG_COAP_OBSERVE_REREGISTER_SECONDS 60
-
 #define COAP_BUF_SIZE 256
 
 static uint8_t coap_tx[COAP_BUF_SIZE];
